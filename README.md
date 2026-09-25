@@ -117,7 +117,60 @@ The parking-slot information is also displayed on the **Wokwi Serial Monitor** u
 16. Display the slot status and number of available spaces on the Serial Monitor.
 17. Repeat the process continuously.
 
+
 ---
+##CODE
+
+#define TOTAL_SLOTS 4
+
+int main(void) { HAL_Init(); SystemClock_Config();
+
+MX_GPIO_Init();
+MX_TIM3_Init();
+
+HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
+
+while (1)
+{
+    uint8_t slot1 = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_2);
+    uint8_t slot2 = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_3);
+    uint8_t slot3 = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_4);
+    uint8_t slot4 = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_5);
+
+    int available = 0;
+
+    if (slot1 == GPIO_PIN_SET)
+        available++;
+
+    if (slot2 == GPIO_PIN_SET)
+        available++;
+
+    if (slot3 == GPIO_PIN_SET)
+        available++;
+
+    if (slot4 == GPIO_PIN_SET)
+        available++;
+
+    if (available > 0)
+    {
+        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0,
+                          GPIO_PIN_SET);   // Green LED
+
+        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1,
+                          GPIO_PIN_RESET); // Red LED
+    }
+    else
+    {
+        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0,
+                          GPIO_PIN_RESET);
+
+        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1,
+                          GPIO_PIN_SET);
+    }
+
+    HAL_Delay(100);
+}
+}
 
 ## Circuit Connections
 
@@ -313,7 +366,9 @@ Entry Gate: CLOSED
 
 The onboard LED connected to **PB3** turns **ON** when the parking area is full.
 
+
 ---
+<img width="977" height="450" alt="image" src="https://github.com/user-attachments/assets/2b21f442-670e-4fe8-821d-a40082042d34" />
 
 ## Working
 
